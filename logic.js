@@ -9,23 +9,37 @@ let isDown = true;
 let isLeftDown = true;
 let isRightDown = true;
 let isAddingWall=false;
+let isAddingSand=true;
+
 const helpText = document.querySelector(".help-text")
 
 helpText.innerHTML = "Adding Sand"
-helpText.style.color = "#4b1da5"
+helpText.style.color = "yellow"
 function addwall(){
   isAddingWall=true;
   helpText.innerHTML = "Adding wall"
-  helpText.style.color = "#000"
+  helpText.style.color = "white"
 
 
 }
 function addsand(){
   isAddingWall=false;
+  isAddingSand = true;
   helpText.innerHTML = "Adding Sand"
-  helpText.style.color = "#4b1da5"
+  helpText.style.color = "yellow"
 
 }
+function addwater(){
+  isAddingSand=false;
+  helpText.innerHTML = "Adding Water"
+  helpText.style.color = "#4b1da5"
+  let waters = document.querySelectorAll(".active")
+  for (let drop of waters) {
+    drop.classList.add("water");
+  }
+
+}
+
 
 function createGrid() {
   for (i = 0; i < gridSize; i++) {
@@ -37,7 +51,7 @@ function createGrid() {
       }
       container.appendChild(pixel);
 
-      waterMovement(pixel);
+      sandMovement(pixel);
       count++;
     }
   }
@@ -48,7 +62,7 @@ function createGrid() {
   container.addEventListener("dragstart", (e) => e.preventDefault());
 }
 
-function waterMovement(pixel) {
+function sandMovement(pixel) {
   pixel.addEventListener("mousedown", mouseDownFunc);
   pixel.addEventListener("mouseover", (e) => {
     if (isDragging) {
@@ -63,8 +77,8 @@ function waterMovement(pixel) {
           currentPixel.classList.remove("active");
           checkSurrounding(currentPosition);
           currentPosition = getNextPixelPosition(currentPosition);
-        console.log({currentPosition})
-        console.log({isLeft,isRight,isDown,isLeftDown,isRightDown})
+        // console.log({currentPosition})
+        // console.log({isLeft,isRight,isDown,isLeftDown,isRightDown})
           let nextPixel = document.querySelector(`[data-id="${currentPosition}"]`);
           nextPixel.classList.add("active");
           currentPixel = nextPixel;
@@ -77,6 +91,7 @@ function waterMovement(pixel) {
   });
   pixel.addEventListener("mouseup", mouseUpFunc);
 }
+
 
 function mouseDownFunc() {
   isDragging = true;
@@ -92,15 +107,15 @@ function getNextPixelPosition(currentPosition) {
   if (isLeftDown === true) {
     return parseInt(currentPosition) + gridSize - 1;
   }
-    // if (isLeft === true) {
-    //   return parseInt(currentPosition) - 1;
-    // }
+  if (isLeft === true && isAddingSand===false) {
+      return parseInt(currentPosition) - 1;
+    }
   if (isRightDown === true) {
     return parseInt(currentPosition) + gridSize + 1;
   }
-  // if (isRight === true) {
-  //   return parseInt(currentPosition) + 1;
-  // }
+  if (isRight === true && isAddingSand===false) {
+    return parseInt(currentPosition) + 1;
+  }
   else return parseInt(currentPosition)
 }
 
@@ -127,20 +142,20 @@ function checkSurrounding(currentPosition) {
   ) {
     isDown = false;
   }
-  // if (
-  //   nextLeftPixel.classList.contains("active") || nextLeftPixel.classList.contains("walls")
-  // ) {
-  //   isLeft = false;
-  // }
+  if (
+    nextLeftPixel.classList.contains("active") || nextLeftPixel.classList.contains("walls") && isAddingSand===false
+  ) {
+    isLeft = false;
+  }
 
   if (nextLeftDownPixel.classList.contains("active")  || nextLeftDownPixel.classList.contains("walls") ) {
     isLeftDown = false;
   }
-  // if (
-  //   nextRightPixel.classList.contains("active") || nextRightPixel.classList.contains("walls") 
-  // ) {
-  //   isRight = false;
-  // }
+  if (
+    nextRightPixel.classList.contains("active") || nextRightPixel.classList.contains("walls") && isAddingSand===false
+  ) {
+    isRight = false;
+  }
   if (nextRightDownPixel.classList.contains("active") ||  nextRightDownPixel.classList.contains("walls") ) {
     isRightDown = false;
   }
